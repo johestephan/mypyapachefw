@@ -30,8 +30,8 @@ recent = list()
 for line in sys.stdin:
     IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
     Client = line.split('"')[-2]
-    m = re.search('Wget|Python|sqlmap|curl',Client) # related services
-    i = re.search('127.0.0.1|87.179.164.194',IP) # Whitelabeld IP's
+    m = re.search('Wget|Python|sqlmap|curl|-',Client) # related services
+    i = re.search('127.0.0.1|::1|87.179.164.194',IP) # Whitelabeld IP's
     if ( m is not None):
         if ( i is None ):
             if not any(IP in s for s in recent):

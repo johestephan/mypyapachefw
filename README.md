@@ -34,3 +34,9 @@ By default the IP should be located at cell 1 (for combined logging). If you use
 cat /var/log/apache2/access.log | python mypyfw.py -i 0
 ```
 
+## Current Rules
+* Header: curl
+* Header: python
+* Header: sqlmap
+* Header: - 
+* Header: Wget
