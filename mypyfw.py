@@ -27,6 +27,7 @@ if (options.IPpos is None):
 logf = open(options.filename,'a')
 sys.stdout = logf
 recent = list()
+
 for line in sys.stdin:
     IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
     Client = line.split('"')[-2]
@@ -36,7 +37,7 @@ for line in sys.stdin:
         if ( i is None ):
             if not any(IP in s for s in recent):
                 print str(datetime.datetime.now()) + " " +IP + " Header: " + Client + " Matched Rule: " + str(m.group(0))
-                recent.insert(0, IP)
+                recent.append(IP)
                 rule = iptc.Rule()
                 rule.in_interface = "eth0"
                 rule.src = IP
