@@ -10,9 +10,10 @@ You need to run the script on console like
 ```
 cat /var/log/apache2/access.log | python mypyfw.py
 ```
-May you want to write a cronjob to do it every some minuits, and work with tail
+May you want to write a cronjob to do it every some minuits, and work with tail, like
 ```
-tail -n 1000 /var/log/apache2/access.log | python mypyfw.py
+*/30 * * * * tail -n 500 /var/log/apache2/other_vhosts_access.log | python /opt/mypyapachefw/mypyfw.py
+
 
 ```
 
