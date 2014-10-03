@@ -26,6 +26,12 @@ Options:
   -f FILE, --file=FILE  write report to FILE
   -i IPPOSITION, --ippos=IPPOSITION
                         adjust IP position, default is 0
+  -b FILE, --blacklist=FILE
+                        path to blacklist, default values are Hardcoded
+  -w FILE, --whitelist=FILE
+                        path to Whitelist, default values are Hardcoded
+  -t, --try-run         you want a test run
+
 ```
 
 ## Need to know
