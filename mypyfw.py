@@ -10,6 +10,7 @@ import sys
 import re
 import datetime
 from optparse import OptionParser
+from geoip import geolite2
 
 def ipfwDrop(IP):
     try:
@@ -21,13 +22,13 @@ def ipfwDrop(IP):
         chain.insert_rule(rule)
     except:
         print "Unexpected error:", sys.exc_info()[0]
-        raise
+        return
 
     
 
 parser = OptionParser()
 parser.add_option("-f", "--file", dest="filename",
-                  help="write report to FILE", metavar="FILE")
+                  help="write report to FILE, default is /var/log/mypyfw.log", metavar="FILE")
 parser.add_option("-i", "--ippos", dest="IPpos", type="int",
 		  help="adjust IP position, default is 0", metavar="IPPOSITION")
 parser.add_option("-b", "--blacklist", dest="blacklist",
@@ -36,6 +37,8 @@ parser.add_option("-w", "--whitelist", dest="whitelist", type="int",
 		  help="path to Whitelist, default values are Hardcoded", metavar="FILE")
 parser.add_option("-t", "--try-run", action="store_false", dest="verbose", default=False,
 		  help=" you want a test run")
+parser.add_option("-g", "--geoIP", action="store_false", dest="geoip", default=False,
+		  help="add GeoIP data to output")
 (options, args) = parser.parse_args()
 
 blacklist = "Wget|Python|sqlmap|curl|-"
@@ -64,12 +67,18 @@ recent = list()
 for line in sys.stdin:
     IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
     Client = line.split('"')[-2]
+    logstring = str(datetime.datetime.now()) + " " + IP + " Header: " + Client 
     m = re.search(blacklist,Client) # related services
     i = re.search(whitelist,IP) # Whitelabeld IP's
     if ( m is not None):
+        logstring += "Matched Rule: " + str(m.group(0)) 
         if ( i is None ):
             if not any(IP in s for s in recent):
-                print str(datetime.datetime.now()) + " " +IP + " Header: " + Client + " Matched Rule: " + str(m.group(0))
+                if options.geoip is not none:
+                    match = geolite2.lookup('17.0.0.1')
+                    if match is not None:
+                        logstring += " Country: " + match.country
+                print logstring
               	if  not options.tryrun:
                     ipfwDROP(IP)
   
