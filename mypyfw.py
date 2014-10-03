@@ -34,7 +34,12 @@ parser.add_option("-b", "--blacklist", dest="blacklist",
 		  help="path to blacklist, default values are Hardcoded", metavar="FILE")
 parser.add_option("-w", "--whitelist", dest="whitelist", type="int",
 		  help="path to Whitelist, default values are Hardcoded", metavar="FILE")
+parser.add_option("-t", "--try-run", action="store_false", dest="verbose", default=False,
+		  help=" you want a test run")
 (options, args) = parser.parse_args()
+
+blacklist = "Wget|Python|sqlmap|curl|-"
+whitelist = "127.0.0.1|::1"
 
 # Parsing Options
 if (options.filename is None): 
@@ -43,15 +48,12 @@ if (options.filename is None):
 if (options.IPpos is None):
     options.IPpos = 1
     
-if (options.blacklist is None): 
-    blacklist = 'Wget|Python|sqlmap|curl|-'
-else:
+if (options.blacklist is not None): 
     for line in open(options.blacklist, "r") :
         blacklist = blacklist +"|" + line.rstrip()
+    print blacklist
         
-if (options.whitelist is None): 
-    options.whitelist = '127.0.0.1|::1'
-else:
+if (options.whitelist is not None): 
     for line in open(options.whitelist, "r") :
         whitelist = whitelist + "|" + line.rstrip()
         
@@ -68,7 +70,8 @@ for line in sys.stdin:
         if ( i is None ):
             if not any(IP in s for s in recent):
                 print str(datetime.datetime.now()) + " " +IP + " Header: " + Client + " Matched Rule: " + str(m.group(0))
-              	ipfwDROP(IP)
+              	if  not options.tryrun:
+                    ipfwDROP(IP)
   
 logf.close()
 sys.stdout = sys.__stdout__
