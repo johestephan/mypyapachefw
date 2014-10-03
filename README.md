@@ -41,3 +41,8 @@ cat /var/log/apache2/access.log | python mypyfw.py -i 0
 * Header: sqlmap
 * Header: - 
 * Header: Wget
+
+## More Information
+For more information please follow:
+* [https://jsonsecurity.blogger.com] My Blog
+* [http://jsonsecurity.blogspot.de/feeds/posts/mypyfw] RSS Feed
