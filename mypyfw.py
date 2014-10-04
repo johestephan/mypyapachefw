@@ -71,7 +71,7 @@ for line in sys.stdin:
     m = re.search(blacklist,Client) # related services
     i = re.search(whitelist,IP) # Whitelabeld IP's
     if ( m is not None):
-        logstring += "Matched Rule: " + str(m.group(0)) 
+        logstring += " Matched Rule: " + str(m.group(0)) 
         if ( i is None ):
             if not any(IP in s for s in recent):
                 if options.geoip:
@@ -80,6 +80,7 @@ for line in sys.stdin:
                         logstring += " Country: " + match.country
                 print logstring
               	if  options.tryrun:
+		    recent.append(IP)
                     ipfwDrop(IP)
   
 logf.close()
