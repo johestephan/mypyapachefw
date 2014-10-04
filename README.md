@@ -2,7 +2,7 @@ README - My Python Apache Firewall
 =====
 MyPyApache FW is a loganalyzer written in python.
 The script will work on any access log you pipe in to it and will create iptables rules to block 
-client ip addresses which may are malicious to the system.
+client ip addresses which may be malicious to the system.
 
 ## Requires
 * python iptables 
@@ -12,8 +12,10 @@ pip install --upgrade python-iptables
 * python GeoIP
 ```
 (fedora) yum install GeoIP GeoIP-dev
+(ubuntu) apt-get install python-devel-all libgeoip-devel
 
 pip install --upgrade GeoIP
+pip install --upgrade python-geoip-geolite2
 ```
  
 ## Console run
