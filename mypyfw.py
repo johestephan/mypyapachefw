@@ -35,9 +35,9 @@ parser.add_option("-b", "--blacklist", dest="blacklist",
 		  help="path to blacklist, default values are Hardcoded", metavar="FILE")
 parser.add_option("-w", "--whitelist", dest="whitelist", type="int",
 		  help="path to Whitelist, default values are Hardcoded", metavar="FILE")
-parser.add_option("-t", "--try-run", action="store_false", dest="verbose", default=False,
+parser.add_option("-t", "--try-run", action="store_false", dest="tryrun", default=True,
 		  help=" you want a test run")
-parser.add_option("-g", "--geoIP", action="store_false", dest="geoip", default=False,
+parser.add_option("-g", "--geoIP", action="store_true", dest="geoip", default=False,
 		  help="add GeoIP data to output")
 (options, args) = parser.parse_args()
 
@@ -74,13 +74,13 @@ for line in sys.stdin:
         logstring += "Matched Rule: " + str(m.group(0)) 
         if ( i is None ):
             if not any(IP in s for s in recent):
-                if options.geoip is not none:
-                    match = geolite2.lookup('17.0.0.1')
+                if options.geoip:
+                    match = geolite2.lookup(IP)
                     if match is not None:
                         logstring += " Country: " + match.country
                 print logstring
-              	if  not options.tryrun:
-                    ipfwDROP(IP)
+              	if  options.tryrun:
+                    ipfwDrop(IP)
   
 logf.close()
 sys.stdout = sys.__stdout__
