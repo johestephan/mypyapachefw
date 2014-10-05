@@ -4,6 +4,8 @@ MyPyApache FW is a loganalyzer written in python.
 The script will work on any access log you pipe in to it and will create iptables rules to block 
 client ip addresses which may be malicious to the system.
 
+Therefor it uses the Agent information from the Apache access log, ad searches for "bad" agents, like curl, python, wget.
+
 ## Requires
 * python iptables 
 ```
@@ -18,7 +20,7 @@ pip install --upgrade GeoIP
 pip install --upgrade python-geoip-geolite2
 ```
  
-## Console run
+## Usage
 You need to run the script on console like
 ```
 cat /var/log/apache2/access.log | python mypyfw.py
