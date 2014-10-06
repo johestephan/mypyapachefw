@@ -41,7 +41,7 @@ parser.add_option("-g", "--geoIP", action="store_true", dest="geoip", default=Fa
 		  help="add GeoIP data to output")
 (options, args) = parser.parse_args()
 
-blacklist = "Wget|Python|sqlmap|curl|-"
+blacklist = "Wget|Python|sqlmap|curl|-|apach0day"
 whitelist = "127.0.0.1|::1"
 
 # Parsing Options
