@@ -54,11 +54,12 @@ if (options.IPpos is None):
 if (options.blacklist is not None): 
     for line in open(options.blacklist, "r") :
         blacklist = blacklist +"|" + line.rstrip()
-    print blacklist
+    print "extended Blacklist: " + blacklist
         
 if (options.whitelist is not None): 
     for line in open(options.whitelist, "r") :
         whitelist = whitelist + "|" + line.rstrip()
+    print "extended Whitelist: " + whitelist
         
 logf = open(options.filename,'a')
 sys.stdout = logf
