@@ -64,6 +64,7 @@ if (options.whitelist is not None):
 logf = open(options.filename,'a')
 sys.stdout = logf
 recent = list()
+counter = 0
 
 for line in sys.stdin:
     IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
@@ -80,10 +81,12 @@ for line in sys.stdin:
                     if match is not None:
                         logstring += " Country: " + match.country
                 print logstring
+		counter += 1
               	if  options.tryrun:
 		    recent.append(IP)
                     ipfwDrop(IP)
-  
 logf.close()
 sys.stdout = sys.__stdout__
 
+print "Blocked " + str(counter) + " IP Addresses in this run"
+  
