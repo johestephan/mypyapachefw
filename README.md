@@ -4,7 +4,7 @@ MyPyApache FW is a loganalyzer written in python.
 The script will work on any access log you pipe in to it and will create iptables rules to block 
 client ip addresses which may be malicious to the system.
 
-Therefor it uses the Agent information from the Apache access log, ad searches for "bad" agents, like curl, python, wget.
+Therefor it uses the Agent information from the Apache access log, and searches for "bad" agents, like curl, python, wget.
 
 ## Requires
 * python iptables 
@@ -49,6 +49,9 @@ Options:
   -g, --geoIP           add GeoIP data to output
 
 ```
+
+## Addons
+* I just added a iptables cleanup script. You can find it in Addons folder. The script will remove all rules which received 0 (zero) packages and will reset the package counter. So if you let it run once a day, it will always delete unused rules.
 
 ## Need to know
 The IP split line may has an error.
