@@ -12,6 +12,7 @@ try:
        (packets, bytes) = rule.get_counters()
        if int(packets) == 0:
           chain.delete_rule(rule)
+    chain.zero_counters()
     table.commit()
     table.close()
 except iptc.ip4tc.IPTCError: 
