@@ -67,6 +67,9 @@ cat /var/log/apache2/access.log | python mypyfw.py -i 0
 * Header: - 
 * Header: Wget
 
+## Waranty
+There is none! Use at own risk. Ping me for improvements.
+
 ## More Information
 For more information please follow:
 * [https://jsonsecurity.blogspot.de/] My Blog

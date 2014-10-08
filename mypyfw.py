@@ -24,6 +24,24 @@ def ipfwDrop(IP):
         print "Unexpected error:", sys.exc_info()[0]
         return
 
+def GETanalyzer(request, IP):
+    try:
+	weightcounter = 0
+	infectionlist = ["select","union","from","where","join"]
+	for rule in infectionlist:
+	    imatch = re.search(rule,request)
+	    if imatch is not None:
+	        weightcounter +=1
+	if weightcounter > 1:
+	    if re.match(r"select (?:[^;]|(?:'.*?'))* from", request) is not None:
+	        print str(datetime.datetime.now()) + " " + request + " InjectCounter: " + str(weightcounter) + " Blocked: " + IP
+                return True
+	else:
+            return False
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        return False
+
     
 
 parser = OptionParser()
@@ -68,13 +86,14 @@ counter = 0
 
 for line in sys.stdin:
     IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
+    Request = line.split('"')[1].lower()
     Client = line.split('"')[-2]
     logstring = str(datetime.datetime.now()) + " " + IP + " Header: " + Client 
     m = re.search(blacklist,Client) # related services
     i = re.search(whitelist,IP) # Whitelabeld IP's
-    if ( m is not None):
+    if ( m is not None) or ( GETanalyzer(Request,IP) ):
         logstring += " Matched Rule: " + str(m.group(0)) 
-        if ( i is None ):
+        if ( i is None ) :
             if not any(IP in s for s in recent):
                 if options.geoip:
                     match = geolite2.lookup(IP)
