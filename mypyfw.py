@@ -5,14 +5,14 @@
 # Copyright (c) 2014,2015 Joerg Stephan under BSD licence
 #
 
-import iptc
 import sys
 import re
 import datetime
 from optparse import OptionParser
 from geoip import geolite2
 
-def ipfwDrop(IP):
+def iptalesDrop(IP):
+    import iptc
     try:
         rule = iptc.Rule()
         rule.in_interface = "eth0"
@@ -23,6 +23,15 @@ def ipfwDrop(IP):
     except:
         print "Unexpected error:", sys.exc_info()[0]
         return
+
+def pfDrop(IP):
+    import pf
+    try:
+        print "test"   
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
+        return
+
 
 def GETanalyzer(request, IP):
     try:
@@ -57,6 +66,8 @@ parser.add_option("-t", "--try-run", action="store_false", dest="tryrun", defaul
 		  help=" you want a test run")
 parser.add_option("-g", "--geoIP", action="store_true", dest="geoip", default=False,
 		  help="add GeoIP data to output")
+parser.add_option("-p", "--pf", action="store_true", dest="enable_pf", default=False,
+		  help="use PF as firewall (ex. on openBSD)")
 (options, args) = parser.parse_args()
 
 blacklist = "Wget|Python|sqlmap|curl|-|apach0day"
@@ -68,7 +79,7 @@ if (options.filename is None):
 
 if (options.IPpos is None):
     options.IPpos = 1
-    
+
 if (options.blacklist is not None): 
     for line in open(options.blacklist, "r") :
         blacklist = blacklist +"|" + line.rstrip()
@@ -103,7 +114,10 @@ for line in sys.stdin:
 		counter += 1
               	if  options.tryrun:
 		    recent.append(IP)
-                    ipfwDrop(IP)
+                    if options.enable_pf:
+			iptablesDrop(IP)
+		    else:
+			pfDrop(IP)
 logf.close()
 sys.stdout = sys.__stdout__
 
