@@ -19,6 +19,11 @@ pip install --upgrade python-iptables
 pip install --upgrade GeoIP
 pip install --upgrade python-geoip-geolite2
 ```
+* python pf
+```
+pip install --upgrade py-pf
+```
+In preparation: Use of pf as firewall. pf is the prefered firewall on FreeBSD, openBSD and NetBSD.
  
 ## Usage
 You need to run the script on console like
@@ -47,6 +52,7 @@ Options:
                         path to Whitelist, default values are Hardcoded
   -t, --try-run          you want a test run
   -g, --geoIP           add GeoIP data to output
+  -p, --pf              use PF as firewall (ex. on openBSD)
 
 ```
 
