@@ -11,7 +11,7 @@ import datetime
 from optparse import OptionParser
 from geoip import geolite2
 
-def iptalesDrop(IP):
+def iptablesDrop(IP):
     import iptc
     try:
         rule = iptc.Rule()
@@ -115,9 +115,9 @@ for line in sys.stdin:
               	if  options.tryrun:
 		    recent.append(IP)
                     if options.enable_pf:
-			iptablesDrop(IP)
-		    else:
 			pfDrop(IP)
+		    else:
+			iptablesDrop(IP)
 logf.close()
 sys.stdout = sys.__stdout__
 
