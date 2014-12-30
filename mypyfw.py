@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # 
-# V1-0 by Joerg Stephan <joerg DOT stephan AT owasp DOT org>
+# V1-0 by Joerg Stephan <joerg DOT stephan AT ymail DOT com>
 # https://github.com/johestephan/mypyapachefw.git
-# Copyright (c) 2014 Joerg Stephan under BSD licence
+# Copyright (c) 2014,2015 Joerg Stephan under BSD licence
 #
 
 import iptc
