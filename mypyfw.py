@@ -14,23 +14,39 @@ from geoip import geolite2
 def iptablesDrop(IP):
     import iptc
     try:
-        rule = iptc.Rule()
-        rule.in_interface = "eth0"
-        rule.src = IP
-        rule.create_target("DROP")
-        chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
-        chain.insert_rule(rule)
+		rule = iptc.Rule()
+		rule.in_interface = options.interface
+		rule.src = IP
+		rule.create_target("DROP")
+		chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
+		chain.insert_rule(rule)
     except:
-        print "Unexpected error:", sys.exc_info()[0]
-        return
+		print "Unexpected error:", sys.exc_info()[0]
+		return
+        
 
 def pfDrop(IP):
     import pf
+    filter = pf.PacketFilter()
+    blockip = pf.PFAddr(IP)
     try:
-        print "test"   
+		# Enable packet filtering
+		filter.enable()
+		ext_if = pf.PFAddr(type=pf.PF_ADDR_DYNIFTL, ifname=options.interface)
+		ruling = pf.PFRule(action=pf.PF_DROP,
+               direction=pf.PF_IN,
+               quick=True,
+               src=pf.PFRuleAddr(blockip))
+        # Initialize and populate the ruleset
+		rs = pf.PFRuleset()
+		rs.append(ruling)
+
+		# Load rules
+		filter = pf.PacketFilter()
+		filter.load_ruleset(rs)
     except:
-        print "Unexpected error:", sys.exc_info()[0]
-        return
+		print "Unexpected error:", sys.exc_info()[0]
+		return
 
 
 def GETanalyzer(request, IP):
@@ -68,10 +84,15 @@ parser.add_option("-g", "--geoIP", action="store_true", dest="geoip", default=Fa
 		  help="add GeoIP data to output")
 parser.add_option("-p", "--pf", action="store_true", dest="enable_pf", default=False,
 		  help="use PF as firewall (ex. on openBSD)")
+parser.add_option("-n", "--net", dest="interface", default="eth0",
+		  help=" set iptables/pf network interface")
+
+
 (options, args) = parser.parse_args()
 
 blacklist = "Wget|Python|sqlmap|curl|-|apach0day"
 whitelist = "127.0.0.1|::1"
+
 
 # Parsing Options
 if (options.filename is None): 
