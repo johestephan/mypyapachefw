@@ -53,7 +53,8 @@ Options:
   -t, --try-run          you want a test run
   -g, --geoIP           add GeoIP data to output
   -p, --pf              use PF as firewall (ex. on openBSD)
-
+  -n INTERFACE, --net=INTERFACE
+                         set iptables/pf network interface
 ```
 
 ## Addons
