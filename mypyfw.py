@@ -74,9 +74,9 @@ parser.add_option("-f", "--file", dest="filename",
                   help="write report to FILE, default is /var/log/mypyfw.log", metavar="FILE")
 parser.add_option("-i", "--ippos", dest="IPpos", type="int",
 		  help="adjust IP position, default is 0", metavar="IPPOSITION")
-parser.add_option("-b", "--blacklist", dest="blacklist",
+parser.add_option("-b", "--blacklist", dest="blacklist", default="./conf.d/MatchList",
 		  help="path to blacklist, default values are Hardcoded", metavar="FILE")
-parser.add_option("-w", "--whitelist", dest="whitelist", type="int",
+parser.add_option("-w", "--whitelist", dest="whitelist", default="./conf.d/IPWhiteList",
 		  help="path to Whitelist, default values are Hardcoded", metavar="FILE")
 parser.add_option("-t", "--try-run", action="store_false", dest="tryrun", default=True,
 		  help=" you want a test run")
