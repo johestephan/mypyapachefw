@@ -43,11 +43,12 @@ def pfDrop(IP):
 		 	af=socket.AF_INET, 
                		quick=True,
                		src=pf.PFRuleAddr(blockip))
-		rs = pf.PFRuleset()
+		#rs = pf.PFRuleset()
+		rs = filter.get_ruleset()
 		rs.append(ruling)
 
 		# Load rules
-		filter = pf.PacketFilter()
+		#filter = pf.PacketFilter()
 		filter.load_ruleset(rs)
     except:
 		print "Unexpected error (pf):", sys.exc_info()[0]
