@@ -15,6 +15,7 @@ indent_mode=2
 [project]
 name=mypyfw
 base_path=/home/jstephan/mypyapachefw
+description=
 
 [long line marker]
 long_line_behaviour=1
@@ -22,6 +23,8 @@ long_line_column=72
 
 [files]
 current_page=0
+FILE_NAME_0=2717;Python;0;EUTF-8;1;1;0;%2Fhome%2Fjstephan%2Fmypyapachefw%2Fmypyfw.py;0;4
+FILE_NAME_1=0;None;0;EUTF-8;1;1;0;%2Fhome%2Fjstephan%2Fmypyapachefw%2Fconf.d%2FMatchList;0;4
 
 [VTE]
 last_dir=/home/jstephan
