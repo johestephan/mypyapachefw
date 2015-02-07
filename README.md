@@ -23,7 +23,7 @@ pip install --upgrade python-geoip-geolite2
 ```
 pip install --upgrade py-pf
 ```
-In preparation: Use of pf as firewall. pf is the prefered firewall on FreeBSD, openBSD and NetBSD.
+for use of pf (ex. openBSD, FreeBSD, NetBSD). 
  
 ## Usage
 You need to run the script on console like
