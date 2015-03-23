@@ -93,15 +93,16 @@ def HEADERanalyzer(line):
 						logstring += " Country: " + match.country
 			print logstring
 			xcounter += 1
-    			if  options.tryrun:
+    			if  not options.tryrun:
 				recent.append(IP)
-			if options.enable_pf:
-				pfDrop(IP)
 			else:
-				iptablesDrop(IP)
+				if options.enable_pf:
+					pfDrop(IP)
+				else:
+					iptablesDrop(IP)
 	return xcounter
     except:
-        print "Unexpected error (Header):", sys.exc_info()[0]
+        print "Unexpected error (Header):", sys.exc_info()
         return 0
 
 
