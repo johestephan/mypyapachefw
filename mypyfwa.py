@@ -10,56 +10,26 @@ import re
 import datetime
 from optparse import OptionParser
 from geoip import geolite2
+import sqlite3
 
 
+def sqllogit(data):
+	try:
+		conn = sqlite3.connect('./mypyfwa.db')
+		conn.execute(''' INSERT INTO log VALUES (?,?,?,?,?); ''', data) 
+		conn.commit()
+		conn.close()
+		return 1
+	except:
+		return 0
 
 
-
-
-def iptablesDrop(IP):
-    import iptc
-    try:
-		rule = iptc.Rule()
-		rule.in_interface = options.interface
-		rule.src = IP
-		rule.create_target("DROP")
-		chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
-		chain.insert_rule(rule)
-    except:
-		print "Unexpected error (iptables):", sys.exc_info()[0]
-		return
-        
-
-def pfDrop(IP):
-    import pf
-    import socket
-    filter = pf.PacketFilter()
-    blockip = pf.PFAddr(IP)
-    try:
-		filter.enable()
-		ext_if = pf.PFAddr(type=pf.PF_ADDR_DYNIFTL, ifname=options.interface)
-		ruling = pf.PFRule(action=pf.PF_DROP,
-               		direction=pf.PF_IN,
-		 	af=socket.AF_INET, 
-               		quick=True,
-               		src=pf.PFRuleAddr(blockip))
-		#rs = pf.PFRuleset()
-		rs = filter.get_ruleset()
-		rs.append(ruling)
-
-		# Load rules
-		#filter = pf.PacketFilter()
-		filter.load_ruleset(rs)
-    except:
-		print "Unexpected error (pf):", sys.exc_info()[0]
-		return
-
-
-def Getrcursivecheck(request, IP):
+def GETcheck(request, IP, CC):
     try:
 	weightcounter = request.count("/")
-	if weightcounter > 15:
+	if weightcounter > 2:
 		print str(datetime.datetime.now()) + " " + request + " RecursiveCounter: " + str(weightcounter) + " Blocked: " + IP
+                sqllogit( (str(datetime.datetime.now()),request,IP,CC,"Path") )
 		return True
 	else:
 		return False
@@ -68,7 +38,7 @@ def Getrcursivecheck(request, IP):
         return False
 
 
-def GETanalyzer(request, IP):
+def GETanalyzer(request, IP, CC):
     try:
 	weightcounter = 0
 	infectionlist = ["select","union","from","where","join"]
@@ -79,7 +49,8 @@ def GETanalyzer(request, IP):
 	if weightcounter > 1:
 	    if re.match(r"select (?:[^;]|(?:'.*?'))* from", request) is not None:
 	        print str(datetime.datetime.now()) + " " + request + " InjectCounter: " + str(weightcounter) + " Blocked: " + IP
-                return True
+            sqllogit( (str(datetime.datetime.now()),request,IP,CC,"SQLinjection") )
+	    return True
 	else:
             return False
     except:
@@ -87,33 +58,20 @@ def GETanalyzer(request, IP):
         return False
 
 
-def HEADERanalyzer(line):
+def HEADERanalyzer(line, IP, CC):
     try:
 	xcounter = 0
-	IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
 	Request = line.split('"')[1].lower()
 	Client = line.split('"')[-2]
 	logstring = str(datetime.datetime.now()) + " " + IP + " Header: " + Client 
 	m = re.search(blacklist,Client) # related services
 	i = re.search(whitelist,IP) # Whitelabeld IP's
-	if ( m is not None) or ( GETanalyzer(Request,IP) ) or ( Getrcursivecheck(Request,IP) ):
-		if ( m is not None):
-			logstring += " Matched Rule: " + str(m.group(0)) 
-		if ( i is None ) :
-			if not any(IP in s for s in recent):
-				if options.geoip:
-					match = geolite2.lookup(IP)
-					if match is not None:
-						logstring += " Country: " + match.country
-			print logstring
-			xcounter += 1
-    			if  not options.tryrun:
-				recent.append(IP)
-			else:
-				if options.enable_pf:
-					pfDrop(IP)
-				else:
-					iptablesDrop(IP)
+	if ( m is not None):
+		logstring += " Matched Rule: " + str(m.group(0)) 
+		print logstring
+		xcounter += 1
+       		sqllogit( (str(datetime.datetime.now()),Client,IP,CC,"Scanner") )
+		
 	return xcounter
     except:
         print "Unexpected error (Header):", sys.exc_info()
@@ -129,26 +87,18 @@ parser.add_option("-b", "--blacklist", dest="blacklist", default="./conf.d/Match
 		  help="path to blacklist, default values are Hardcoded", metavar="FILE")
 parser.add_option("-w", "--whitelist", dest="whitelist", default="./conf.d/IPWhiteList",
 		  help="path to Whitelist, default values are Hardcoded", metavar="FILE")
-parser.add_option("-t", "--try-run", action="store_false", dest="tryrun", default=True,
-		  help=" you want a test run")
-parser.add_option("-g", "--geoIP", action="store_true", dest="geoip", default=False,
-		  help="add GeoIP data to output")
-parser.add_option("-p", "--pf", action="store_true", dest="enable_pf", default=False,
-		  help="use PF as firewall (ex. on openBSD)")
-parser.add_option("-n", "--net", dest="interface", default="eth0",
-		  help=" set iptables/pf network interface")
 parser.add_option("-s", "--inputstream", dest="streamsource",
 		  help="Apache Log file to follow stream", metavar="FILE")
 
 
 (options, args) = parser.parse_args()
 
-blacklist = "Wget|Python|sqlmap|curl|apach0day"
+blacklist = "Wget|Python|sqlmap|curl|apach0day|pma|php|connect|wordpress|wp"
 whitelist = "127.0.0.1|::1"
 
 # Parsing Options
 if (options.filename is None): 
-    options.filename = "/var/log/mypyfw.log"
+    options.filename = "./mypyfwa.log"
 
 if (options.IPpos is None):
     options.IPpos = 1
@@ -174,12 +124,20 @@ else:
 	source = sys.stdin
 
 for line in source:
-    counter += HEADERanalyzer(line)
-    
+    IP = line.split()[options.IPpos] # May need to be adjust, default 0 should work, combined is 1
+    match = geolite2.lookup(IP)
+    if match is not None:
+	CC = str(match.country)
+    else:
+        CC = "UNKNOWN"
+    Request = line.split('"')[1].lower()
+    counter += HEADERanalyzer(line, IP, CC)
+    counter += GETanalyzer(Request, IP, CC)
+    counter += GETcheck(Request, IP, CC)  
     
     
 logf.close()
 sys.stdout = sys.__stdout__
 
-print "Blocked " + str(counter) + " IP Addresses in this run"
+print "Logged " + str(counter) + " Lines"
   
