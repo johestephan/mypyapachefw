@@ -55,6 +55,19 @@ def pfDrop(IP):
 		return
 
 
+def Getrcursivecheck(request, IP):
+    try:
+	weightcounter = request.count("/")
+	if weightcounter > 15:
+		print str(datetime.datetime.now()) + " " + request + " RecursiveCounter: " + str(weightcounter) + " Blocked: " + IP
+		return True
+	else:
+		return False
+    except:
+	print "Unexpected error (GET_recursive):", sys.exc_info()[0]
+        return False
+
+
 def GETanalyzer(request, IP):
     try:
 	weightcounter = 0
@@ -83,8 +96,9 @@ def HEADERanalyzer(line):
 	logstring = str(datetime.datetime.now()) + " " + IP + " Header: " + Client 
 	m = re.search(blacklist,Client) # related services
 	i = re.search(whitelist,IP) # Whitelabeld IP's
-	if ( m is not None) or ( GETanalyzer(Request,IP) ):
-		logstring += " Matched Rule: " + str(m.group(0)) 
+	if ( m is not None) or ( GETanalyzer(Request,IP) ) or ( Getrcursivecheck(Request,IP) ):
+		if ( m is not None):
+			logstring += " Matched Rule: " + str(m.group(0)) 
 		if ( i is None ) :
 			if not any(IP in s for s in recent):
 				if options.geoip:
