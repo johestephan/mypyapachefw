@@ -129,7 +129,7 @@ parser.add_option("-s", "--inputstream", dest="streamsource",
 
 (options, args) = parser.parse_args()
 
-blacklist = "Wget|Python|sqlmap|curl|-|apach0day"
+blacklist = "Wget|Python|sqlmap|curl|apach0day"
 whitelist = "127.0.0.1|::1"
 
 # Parsing Options
