@@ -142,10 +142,13 @@ for line in source:
 	CC = str(match.country)
     else:
         CC = "UNKNOWN"
-    Request = line.split('"')[1].lower()
-    counter += HEADERanalyzer(line, IP, CC)
-    counter += GETanalyzer(Request, line,  IP, CC)
-    counter += GETcheck(Request, IP, CC)  
+   
+    iires = re.search(whitelist,IP) 
+    if ( iires is None ) :
+	Request = line.split('"')[1].lower()
+    	counter += HEADERanalyzer(line, IP, CC)
+    	counter += GETanalyzer(Request, line,  IP, CC)
+    	counter += GETcheck(Request, IP, CC)  
     
     
 logf.close()
