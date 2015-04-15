@@ -38,18 +38,30 @@ def GETcheck(request, IP, CC):
         return False
 
 
-def GETanalyzer(request, IP, CC):
+def GETanalyzer(request, line, IP, CC):
     try:
 	weightcounter = 0
-	infectionlist = ["select","union","from","where","join"]
-	for rule in infectionlist:
+	weightcounter2 = 0
+	infectionlist1 = ["select","union","from","where","join"]
+	infectionlist2 = ["echo","wget","curl"]
+	for rule in infectionlist1:
 	    imatch = re.search(rule,request)
 	    if imatch is not None:
 	        weightcounter +=1
+        for rule in infectionlist2:
+            imatch = re.search(rule,line)
+            if imatch is not None:
+                weightcounter2 +=1
+
 	if weightcounter > 1:
 	    if re.match(r"select (?:[^;]|(?:'.*?'))* from", request) is not None:
 	        print str(datetime.datetime.now()) + " " + request + " InjectCounter: " + str(weightcounter) + " Blocked: " + IP
-            sqllogit( (str(datetime.datetime.now()),request,IP,CC,"SQLinjection") )
+            	sqllogit( (str(datetime.datetime.now()),request,IP,CC,"SQLinjection") )
+ 	if weightcounter2 > 1:
+            print str(datetime.datetime.now()) + " " + line + " InjectCounter: " + str(weightcounter) + " Blocked: " + IP
+            sqllogit( (str(datetime.datetime.now()),line,IP,CC,"SHELLinjection") )
+
+	if ( weightcounter > 1) or (weightcounter2 > 1):		
 	    return True
 	else:
             return False
@@ -132,7 +144,7 @@ for line in source:
         CC = "UNKNOWN"
     Request = line.split('"')[1].lower()
     counter += HEADERanalyzer(line, IP, CC)
-    counter += GETanalyzer(Request, IP, CC)
+    counter += GETanalyzer(Request, line,  IP, CC)
     counter += GETcheck(Request, IP, CC)  
     
     
